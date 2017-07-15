@@ -14,6 +14,7 @@ import com.tu.ziik.lms.validator.UserValidator;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -32,6 +33,18 @@ public class UserController {
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String listUsers(Model model) {
+
+        List<User> users = userService.findAllUsers();
+
+
+        for (int index = 0; index < users.size(); index ++){
+
+          User user =   users.get(index);
+         // user.setUsername("user" + (index + 1));
+            user.setPassword("user" + (index + 1));
+            userService.save(user);
+
+        }
 
         model.addAttribute("users", userService.findAllUsers());
         return "user-list";
