@@ -1,0 +1,118 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:substituteby="fragments/admin-main :: head">
+
+</head>
+<body>
+
+
+<div id="wrapper">
+
+    <div th:replace="fragments/admin-main :: main">
+    </div>
+
+    <div id="page-wrapper">
+
+        <div id="container-fluid">
+
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h1 class="page-header">Create course</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+
+            <br/>
+
+
+                <div class="row">
+
+                    <div class="col-md-8 col-md-offset-2">
+
+                        <form th:object="${courseCategory}" th:action="@{/admin/course/add-category}" method="post">
+                            <div class="form-group">
+                                <div th:if="${success}">
+                                    <h4 th:text="${success}" class="alert alert-success">Category successfully added</h4>
+                                </div>
+                                <div th:if="${error}">
+                                    <h4 th:text="${error}" class="alert alert-danger">Category successfully added</h4>
+                                </div>
+                                <script>
+                                    function showCategoryForm(){
+                                        var category = document.getElementById("category-name");
+                                        var submitCategory = document.getElementById("category-submit");
+
+                                        category.setAttribute("type", "text");
+                                        submitCategory.setAttribute("type", "submit");
+                                    }
+                                </script>
+
+                                <label for="category"><button type="button" class="btn btn-default btn-sm" onclick="showCategoryForm()">Add new category</button></label>
+                                    <input type="hidden" class="form-control" name="name" id="category-name"/>
+                            </div>
+
+                            <div class="form-group">
+                                    <input type="hidden" id="category-submit" value="Add" class="btn btn-primary"/>
+                            </div>
+
+                        </form>
+
+                        <br/>
+
+                        <form th:object="${course}" th:action="@{/admin/course/add}" method="POST">
+
+                            <input type="hidden" th:field="*{id}"/>
+                            <input type="hidden" th:field="*{version}"/>
+                            <div class="form-group">
+                                <label for="title">Title <span class="require">*</span></label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="content">Description</label>
+                                <textarea rows="5" class="form-control" th:field="*{content}" ></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="category">Category <span class="require">*</span></label><br/>
+                                <select th:field="*{category}">
+                                    <option th:each="category : ${categories}"
+                                            th:value="${category.name}"
+                                            th:text="${category.name}">Wireframe</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <p><span class="require">*</span> - required fields</p>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    Create
+                                </button>
+
+                                <a th:href="@{/admin/course/list}" class="btn btn-default">Cancel</a>
+
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+</div>
+
+<th:block th:substituteby="fragments/admin-main :: foot"></th:block>
+</body>
+</html>

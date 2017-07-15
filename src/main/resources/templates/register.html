@@ -1,0 +1,118 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:substituteby="fragments/admin-main :: head">
+
+</head>
+<body>
+
+<div id="wrapper">
+
+    <div th:replace="fragments/admin-main :: main">
+    </div>
+
+    <div id="page-wrapper">
+
+        <div id="container-fluid">
+
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h1 class="page-header" th:text="${pageTitle}">Register User</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+
+            <br/>
+
+
+            <div class="row">
+
+                <div class="col-md-8 col-md-offset-2">
+                    <form class="form-horizontal" name="f" th:object="${userForm}" th:action="@{/user/register}" method="post">
+
+                        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                            <p>Form has errors</p>
+                        </div>
+
+                        <input type="hidden" th:field="*{id}"/>
+                        <input type="hidden" th:field="*{version}"/>
+
+                        <div class="form-group" th:class="${#fields.hasErrors('username')} ? 'form-group has-error' : 'form-group'">
+
+                            <label for="username">Username <span class="require">*</span></label>
+
+                                <input type="text" class="form-control" th:field="*{username}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('username')}">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('username')}" th:text="${err}"/>
+                    </ul>
+                </span>
+                        </div>
+
+                        <div class="form-group" th:class="${#fields.hasErrors('password')} ? 'form-group has-error' : 'form-group'">
+                            <label for="password">Password <span class="require">*</span></label>
+                                <input type="password" class="form-control" th:field="*{password}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('password')}">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('password')}" th:text="${err}"/>
+                    </ul>
+                </span>
+                        </div>
+
+
+                        <div class="form-group" th:class="${#fields.hasErrors('passwordConfirm')} ? 'form-group has-error' : 'form-group'">
+                            <label for="passwordConfirm">Retype password <span class="require">*</span></label>
+                                <input type="password" class="form-control" name="passwordConfirm" id="passwordConfirm"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('passwordConfirm')}">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('passwordConfirm')}" th:text="${err}"/>
+                    </ul>
+                </span>
+                        </div>
+
+                        <div sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" class="form-group">
+                            <label for="roles" class="control-label">Roles - (Default role is ROLE_USER unless you choose otherwise) </label>
+                                <ul class="list-inline">
+                                    <li th:each="currentRole : ${roles}">
+                                        <input type="checkbox" th:field="*{theRoles}" th:value="${currentRole.name}" />
+                                        <label th:for="${#ids.prev('theRoles')}"
+                                               th:text="${currentRole.name}">Role</label>
+                                    </li>
+                                </ul>
+                        </div>
+
+                        <div class="form-group">
+                            <p><span class="require">*</span> - required fields</p>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                Register
+                            </button>
+
+                            <a th:href="@{/users}" class="btn btn-default">Cancel</a>
+
+                        </div>
+
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<th:block th:substituteby="fragments/admin-main :: foot"></th:block>
+
+
+
+</body>
+</html>
