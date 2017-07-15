@@ -42,7 +42,7 @@ public class UserController {
           User user =   users.get(index);
          // user.setUsername("user" + (index + 1));
             user.setPassword("user" + (index + 1));
-            userService.save(user);
+          //  userService.save(user);
 
         }
 
