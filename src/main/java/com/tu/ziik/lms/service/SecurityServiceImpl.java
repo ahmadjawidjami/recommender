@@ -35,11 +35,6 @@ public class SecurityServiceImpl implements SecurityService {
             return ((UserDetails) principal).getUsername();
         }
         return principal.toString();
-
-//        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
-//        if (userDetails instanceof UserDetails) {
-//            return ((UserDetails)userDetails).getUsername();
-//        }
     }
 
     @Override

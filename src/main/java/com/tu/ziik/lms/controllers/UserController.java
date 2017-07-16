@@ -1,6 +1,9 @@
 package com.tu.ziik.lms.controllers;
 
 import com.tu.ziik.lms.repository.RoleRepository;
+
+import org.apache.mahout.cf.taste.common.TasteException;
+import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,138 +11,161 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.tu.ziik.lms.model.User;
+import com.tu.ziik.lms.model.library.Movie;
+import com.tu.ziik.lms.recommender.engines.RecommenderEngine;
+import com.tu.ziik.lms.service.MovieService;
 import com.tu.ziik.lms.service.SecurityService;
 import com.tu.ziik.lms.service.UserService;
 import com.tu.ziik.lms.validator.UserValidator;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @Autowired
-    private SecurityService securityService;
+	@Autowired
+	private SecurityService securityService;
 
-    @Autowired
-    private RoleRepository roleRepository;
+	@Autowired
+	private RoleRepository roleRepository;
 
+	@Autowired
+	private UserValidator userValidator;
 
-    @Autowired
-    private UserValidator userValidator;
+	@Autowired
+	private RecommenderEngine engine;
 
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public String listUsers(Model model) {
+	@Autowired
+	private MovieService movieService;
 
-        model.addAttribute("users", userService.findAllUsers());
-        return "user-list";
-    }
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public String listUsers(Model model) {
 
-    @RequestMapping(value = "/user/register", method = RequestMethod.GET)
-    public String registerUser(Model model) {
+		model.addAttribute("users", userService.findAllUsers());
+		return "user-list";
+	}
 
-        User userForm = (User) model.asMap().get("userForm");
+	@RequestMapping(value = "/user/register", method = RequestMethod.GET)
+	public String registerUser(Model model) {
 
-        if (userForm == null) {
-            model.addAttribute("userForm", new User());
-        }else
-            model.addAttribute("userForm", userForm);
+		User userForm = (User) model.asMap().get("userForm");
 
-        model.addAttribute("roles", roleRepository.findAll());
-        boolean isAuthenticatedAsAdmin = securityService.isUserAuthenticatedAsAdmin();
-        if (isAuthenticatedAsAdmin){
-            model.addAttribute("pageTitle", "Register User");
-            return "register";
-        }
+		if (userForm == null) {
+			model.addAttribute("userForm", new User());
+		} else
+			model.addAttribute("userForm", userForm);
 
-        model.addAttribute("setRegisterActive", "true");
-        return "new-login";
-    }
+		model.addAttribute("roles", roleRepository.findAll());
+		boolean isAuthenticatedAsAdmin = securityService.isUserAuthenticatedAsAdmin();
+		if (isAuthenticatedAsAdmin) {
+			model.addAttribute("pageTitle", "Register User");
+			return "register";
+		}
 
-    @RequestMapping(value = "/user/register", method = RequestMethod.POST)
-    public String registerUser(@ModelAttribute("userForm") User userForm, BindingResult bindingResult,
-                               RedirectAttributes redirectAttributes) {
+		model.addAttribute("setRegisterActive", "true");
+		return "new-login";
+	}
 
-        userValidator.validate(userForm, bindingResult);
+	@RequestMapping(value = "/user/register", method = RequestMethod.POST)
+	public String registerUser(@ModelAttribute("userForm") User userForm, BindingResult bindingResult,
+			RedirectAttributes redirectAttributes) {
 
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("userForm", userForm);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userForm", bindingResult);
+		userValidator.validate(userForm, bindingResult);
 
-            if (userForm.getId() != null){
-//                redirectAttributes.addAttribute("id", userForm.getId());
-//                return "redirect:/user/edit/{id}";
-                return "redirect:/user/edit/" + userForm.getId() + "";
-            }
+		if (bindingResult.hasErrors()) {
+			redirectAttributes.addFlashAttribute("userForm", userForm);
+			redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userForm",
+					bindingResult);
 
-            return "redirect:/user/register";
-        }
+			if (userForm.getId() != null) {
+				// redirectAttributes.addAttribute("id", userForm.getId());
+				// return "redirect:/user/edit/{id}";
+				return "redirect:/user/edit/" + userForm.getId() + "";
+			}
 
-        userService.save(userForm);
+			return "redirect:/user/register";
+		}
 
-        if (securityService.isUserAuthenticatedAsAdmin()){
-            return "redirect:/users";
-        }
+		userService.save(userForm);
 
-        securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
+		if (securityService.isUserAuthenticatedAsAdmin()) {
+			return "redirect:/users";
+		}
 
-        return "redirect:/welcome";
-    }
+		securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
 
-    @RequestMapping(value = "user/delete/{id}", method = RequestMethod.GET)
-    public String deleteUser(@PathVariable Long id) {
+		return "redirect:/welcome";
+	}
 
-        userService.delete(id);
-        return "redirect:/users";
-    }
+	@RequestMapping(value = "user/delete/{id}", method = RequestMethod.GET)
+	public String deleteUser(@PathVariable Long id) {
 
+		userService.delete(id);
+		return "redirect:/users";
+	}
 
-    @RequestMapping(value = "/user/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
+	@RequestMapping(value = "/user/edit/{id}")
+	public String showEditForm(@PathVariable Long id, Model model) {
 
-        User userForm = (User) model.asMap().get("userForm");
+		User userForm = (User) model.asMap().get("userForm");
 
-        if (userForm == null) {
-              User user = userService.findById(id);
-              model.addAttribute("userForm", user);
-           // model.addAttribute("userForm", new User());
-        }else
-            model.addAttribute("userForm", userForm);
+		if (userForm == null) {
+			User user = userService.findById(id);
+			model.addAttribute("userForm", user);
+			// model.addAttribute("userForm", new User());
+		} else
+			model.addAttribute("userForm", userForm);
 
-      //  User user = userService.findById(id);
+		// User user = userService.findById(id);
 
-      //  model.addAttribute("userForm", user);
-        model.addAttribute("roles", roleRepository.findAll());
-        model.addAttribute("pageTitle", "Edit User");
+		// model.addAttribute("userForm", user);
+		model.addAttribute("roles", roleRepository.findAll());
+		model.addAttribute("pageTitle", "Edit User");
 
-        return "register";
-    }
+		return "register";
+	}
 
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login(Model model, String error, String logout, HttpSession httpSession) {
+		model.addAttribute("userForm", new User());
+		if (error != null)
+			model.addAttribute("loginInvalidMessage", "Your username and password is invalid.");
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout, HttpSession httpSession) {
-        model.addAttribute("userForm", new User());
-        if (error != null)
-            model.addAttribute("loginInvalidMessage", "Your username and password is invalid.");
+		if (logout != null)
+			model.addAttribute("logoutMessage", "You have been logged out successfully.");
 
-        if (logout != null)
-            model.addAttribute("logoutMessage", "You have been logged out successfully.");
+		return "new-login";
+	}
 
-        return "new-login";
-    }
+	@RequestMapping(value = "/user/forgot", method = RequestMethod.GET)
+	public String showForgetForm() {
 
-    @RequestMapping(value = "/user/forgot", method = RequestMethod.GET)
-    public String showForgetForm() {
+		return "forgot";
+	}
 
+	@RequestMapping(value = { "/", "/welcome" }, method = RequestMethod.GET)
+	public String welcome(Model model) throws TasteException {
 
-        return "forgot";
-    }
+		List<RecommendedItem> items = engine.getRecommendation(10, 20);
+		Map<String, Float> est_rates = new HashMap<String, Float>();
+		items.forEach(item -> est_rates.put(item.getItemID() + "", item.getValue()));
+		List<Movie> movies = movieService.getItems(items);
 
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model) {
-        return "welcome";
-    }
+		model.addAttribute("items", movies);
+		model.addAttribute("Est_Rate", est_rates);
+
+		System.out.println("____________Contrller________________");
+		for (Movie item : movies) {
+			System.out.println(item.getId() + "," + item.getName() + "," + item.getTrailerUrl());
+		}
+		return "welcome";
+	}
 
 }
