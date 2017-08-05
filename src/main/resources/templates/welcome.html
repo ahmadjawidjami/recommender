@@ -25,35 +25,35 @@
 								sec:authentication="principal.authorities">[ROLE_USER]</span> <!--/* When using CSRF this needs to be a POST */-->
 							</span>
 						</h1>
-						<div class="well">
-							<div class="container">
-								<div th:each="item:${items}">
-									<div class="col-md-2 text-center well">
-										<div class="item_image">
-											<div>
-												<img alt="" th:src="@{/images/image.jpg}" width="200"
-													height="150" class="img-responsive" id="item"></img>
-											</div>
-											<div class="item_caption">
-												<span th:text="${item.getName()}" class="title">something</span>
-											</div>
-										</div>
-										<div>
-											<span th:text="${'Release:'+item.getReleaseDate()}"></span>
-										</div>
-										<div>
-											<span>Est-Rating:</span> <span
-												th:text="${Est_Rate['__${item.getId()}__']}"></span>
-										</div>
-										<div>
-											<a th:href="${item.getTrailerUrl()}" target="_blank">Trailer</a>
-										</div>
+
+						<div th:each="item:${items}">
+							<div class="col-sm-2 text-center" style="border:1px solid black;">
+								<div class="item_image ">
+									<div>
+										<img alt="" th:src="@{/images/image.jpg}" width="5000"
+											height="150" class="img-responsive" id="item"></img>
+									</div>
+									<div class="item_caption">
+										<span th:text="${item.getName()}" class="title">something</span>
 									</div>
 								</div>
-
-
+								<div>
+									<span th:text="${'Release:'+item.getReleaseDate()}"></span>
+								</div>
+								<div>
+									<span>Est-Rating:</span> <span
+										th:text="${Est_Rate['__${item.getId()}__']}"></span>
+								</div>
+								<div>
+									<a th:href="${item.getTrailerUrl()}" target="_blank"><span
+										class="btn btn-info">Watch Trailer</span></a>
+								</div>
 							</div>
 						</div>
+
+
+
+
 					</div>
 					<!-- /.col-lg-12 -->
 				</div>

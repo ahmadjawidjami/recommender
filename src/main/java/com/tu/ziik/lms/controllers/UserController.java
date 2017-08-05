@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -47,6 +48,17 @@ public class UserController {
 
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public String listUsers(Model model) {
+
+		List<User> users = userService.findAllUsers();
+
+		for (int index = 0; index < users.size(); index++) {
+
+			User user = users.get(index);
+			// user.setUsername("user" + (index + 1));
+			user.setPassword("user" + (index + 1));
+			// userService.save(user);
+
+		}
 
 		model.addAttribute("users", userService.findAllUsers());
 		return "user-list";
@@ -154,17 +166,12 @@ public class UserController {
 	public String welcome(Model model) throws TasteException {
 
 		List<RecommendedItem> items = engine.getRecommendation(10, 20);
-		Map<String, Float> est_rates = new HashMap<String, Float>();
-		items.forEach(item -> est_rates.put(item.getItemID() + "", item.getValue()));
+		Map<String, Double> est_rates = new HashMap<String, Double>();
+		items.forEach(item -> est_rates.put(item.getItemID() + "", Math.round(item.getValue() * 100.0) / 100.0));
 		List<Movie> movies = movieService.getItems(items);
-
 		model.addAttribute("items", movies);
 		model.addAttribute("Est_Rate", est_rates);
 
-		System.out.println("____________Contrller________________");
-		for (Movie item : movies) {
-			System.out.println(item.getId() + "," + item.getName() + "," + item.getTrailerUrl());
-		}
 		return "welcome";
 	}
 

@@ -11,13 +11,12 @@ import org.springframework.stereotype.Service;
 import com.tu.ziik.lms.model.library.Movie;
 import com.tu.ziik.lms.repository.MovieRepository;
 
-
-
 @Service
 public class MovieService {
-	
+
 	@Autowired
 	private MovieRepository movieRepository;
+
 	public List<Movie> getItems(List<RecommendedItem> items) throws TasteException {
 		List<Movie> movies = new ArrayList<Movie>();
 		items.forEach(item -> movies.add(movieRepository.findOne((int) item.getItemID())));
