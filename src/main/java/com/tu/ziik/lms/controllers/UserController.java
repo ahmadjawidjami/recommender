@@ -1,5 +1,6 @@
 package com.tu.ziik.lms.controllers;
 
+import com.tu.ziik.lms.repository.GenreRepository;
 import com.tu.ziik.lms.repository.RoleRepository;
 
 import org.apache.mahout.cf.taste.common.TasteException;
@@ -36,6 +37,9 @@ public class UserController {
 
 	@Autowired
 	private RoleRepository roleRepository;
+
+	@Autowired
+	private GenreRepository genreRepository;
 
 	@Autowired
 	private UserValidator userValidator;
@@ -75,6 +79,9 @@ public class UserController {
 			model.addAttribute("userForm", userForm);
 
 		model.addAttribute("roles", roleRepository.findAll());
+
+		model.addAttribute("genres", genreRepository.findAll());
+
 		boolean isAuthenticatedAsAdmin = securityService.isUserAuthenticatedAsAdmin();
 		if (isAuthenticatedAsAdmin) {
 			model.addAttribute("pageTitle", "Register User");

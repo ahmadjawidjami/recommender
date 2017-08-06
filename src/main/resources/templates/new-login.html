@@ -66,6 +66,10 @@
                                     </div>
                                 </div>
                             </form>
+
+
+
+
                             <form id="register-form" th:action="@{/user/register}" th:object="${userForm}" method="post" role="form" style="display: none;">
 
                                 <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
@@ -99,14 +103,17 @@
                                     </span>
                                 </div>
 
-                                <div class="form-group" th:class="${#fields.hasErrors('gender')} ? 'form-group has-error' : 'form-group'">
-                                    <input type="text" class="form-control" th:field="*{gender}" tabindex="3" placeholder="Gender"/>
-                                    <span class="help-block" th:if="${#fields.hasErrors('gender')}">
-                                        <ul>
-                                            <li th:each="err : ${#fields.errors('gender')}" th:text="${err}"/>
-                                        </ul>
-                                    </span>
+                                <div class="form-group" th:class="${#fields.hasErrors('genre')} ? 'form-group has-error' : 'form-group'">
+                                    <select th:field="*{gender}" class="form-control">
+
+                                        <option th:value="M" th:text="M"></option>
+                                        <option th:value="F" th:text="F"></option>
+
+                                    </select>
                                 </div>
+
+
+
 
                                 <div class="form-group" th:class="${#fields.hasErrors('age')} ? 'form-group has-error' : 'form-group'">
                                     <input type="text" class="form-control" th:field="*{age}" tabindex="3" placeholder="Age"/>
@@ -126,6 +133,8 @@
                                     </span>
                                 </div>
 
+
+
                                 <div class="form-group" th:class="${#fields.hasErrors('zipcode')} ? 'form-group has-error' : 'form-group'">
                                     <input type="text" class="form-control" th:field="*{zipcode}" tabindex="3" placeholder="Zip Code"/>
                                     <span class="help-block" th:if="${#fields.hasErrors('zipcode')}">
@@ -133,6 +142,14 @@
                                             <li th:each="err : ${#fields.errors('zipcode')}" th:text="${err}"/>
                                         </ul>
                                     </span>
+                                </div>
+
+                                <div class="form-group" th:class="${#fields.hasErrors('genre')} ? 'form-group has-error' : 'form-group'">
+                                    <select th:field="*{genre}" class="form-control">
+                                        <option th:each="genre : ${genres}"
+                                                th:value="${genre.name}"
+                                                th:text="${genre.id}">Wireframe</option>
+                                    </select>
                                 </div>
 
 

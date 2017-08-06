@@ -1,5 +1,8 @@
 package com.tu.ziik.lms.model.library;
 
+import com.tu.ziik.lms.model.Genre;
+import com.tu.ziik.lms.model.Role;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,9 +11,11 @@ import java.util.Set;
 @Table(name = "movies")
 public class Movie {
 
-    private int id;
+    private Long id;
     private String name;
     private Set<UserRating> userRatings;
+
+    private Set<Genre> genres;
 
     private String releaseDate;
     private String trailerUrl;
@@ -35,19 +40,19 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(String name) {
-        this.name = name;
-        userRatings = new HashSet<>();
-    }
+//    public Movie(String name) {
+//        this.name = name;
+//        userRatings = new HashSet<>();
+//    }
 
     @Id
     @Column(name = "item_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -59,12 +64,34 @@ public class Movie {
         this.name = name;
     }
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie")
     public Set<UserRating> getUserRatings() {
         return userRatings;
     }
 
     public void setUserRatings(Set<UserRating> userRatings) {
         this.userRatings = userRatings;
+    }
+
+
+    @ManyToMany
+    @JoinTable(name = "movies_genres", joinColumns = @JoinColumn(name = "item_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    public Set<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(Set<Genre> roles) {
+        this.genres = roles;
+    }
+
+
+//    @ManyToMany
+//    @JoinTable(name = "movie_genre", joinColumns = @JoinColumn(name = "item_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
+//    public Set<Genre> getGenres() {
+//        return genres;
+//    }
+
+    public void setRoles(Set<Genre> genres) {
+        this.genres = genres;
     }
 }

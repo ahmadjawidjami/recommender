@@ -4,14 +4,28 @@ import com.tu.ziik.lms.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
+@IdClass(EmployeeId.class)
 public class UserRating implements Serializable {
 	private Movie movie;
 	private User user;
 	private String timestamp;
 	private int rating;
+
+
+//	private Long theId;
+//
+//
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.AUTO)
+//	public Long getTheId() {
+//		return theId;
+//	}
+//
+//	public void setTheId(Long theId) {
+//		this.theId = theId;
+//	}
 
 	@Column(name = "timestamp")
 	public String getTimestamp() {
@@ -32,7 +46,7 @@ public class UserRating implements Serializable {
 
 	@Id
 	@ManyToOne
-	@JoinColumn(name = "item_id",insertable=false)
+	@JoinColumn(name = "item_id")
 	public Movie getMovie() {
 		return movie;
 	}
@@ -43,7 +57,7 @@ public class UserRating implements Serializable {
 
 	@Id
 	@ManyToOne
-	@JoinColumn(name = "user_id",insertable=false)
+	@JoinColumn(name = "user_id")
 	public User getUser() {
 		return user;
 	}

@@ -19,7 +19,7 @@ public class MovieService {
 
 	public List<Movie> getItems(List<RecommendedItem> items) throws TasteException {
 		List<Movie> movies = new ArrayList<Movie>();
-		items.forEach(item -> movies.add(movieRepository.findOne((int) item.getItemID())));
+		items.forEach(item -> movies.add(movieRepository.findOne( item.getItemID())));
 		return movies;
 	}
 

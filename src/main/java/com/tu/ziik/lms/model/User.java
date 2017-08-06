@@ -28,7 +28,7 @@ public class User {
 
     private String zipcode;
     private String genre;
-    private int age;
+    private String age;
 
 
     public String getGender() {
@@ -63,11 +63,11 @@ public class User {
         this.genre = genre;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
@@ -128,7 +128,7 @@ public class User {
         this.roles = roles;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     public Set<CourseContentPost> getCourseContentPosts(){
         return courseContentPosts;
     }
@@ -137,7 +137,7 @@ public class User {
         this.courseContentPosts = courseContentPosts;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     public Set<Course> getCourses(){
         return courses;
     }
